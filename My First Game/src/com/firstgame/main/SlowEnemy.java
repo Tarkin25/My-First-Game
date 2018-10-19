@@ -24,7 +24,8 @@ public class SlowEnemy extends GameObject {
 		x += speedX;
 		y += speedY;
 		
-		
+		if(y <= 0 || y >= Game.HEIGHT-48) speedY *= -1;
+		if(x <= 0 || x >= Game.WIDTH-16) speedX *= -1;
 	}
 
 	public void render(Graphics g) {	
