@@ -1,12 +1,15 @@
 package com.firstgame.main;
 
 import java.awt.Graphics;
+import java.util.Random;
 
 public abstract class GameObject {
 	
 	protected int x, y;	
 	protected ID id;	
 	protected int speedX, speedY;
+	
+	Random r;
 	
 	public GameObject(int x, int y, ID id) {
 		this.x = x;
