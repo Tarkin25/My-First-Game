@@ -8,6 +8,8 @@ import java.util.Random;
 
 public class Game extends Canvas implements Runnable {
 	
+	// 123 Test, 123 Test
+	
 	/**
 	 * 
 	 */
