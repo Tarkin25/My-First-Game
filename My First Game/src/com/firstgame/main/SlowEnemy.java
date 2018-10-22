@@ -21,11 +21,26 @@ public class SlowEnemy extends GameObject {
 	}
 
 	public void tick() {
+		if(y <= 0) {
+			speedY = r.nextInt(5);
+		}
+		
+		if(y >= Game.HEIGHT-48) {
+			speedY = r.nextInt(5);
+			speedY *= -1; 
+		}
+		
+		if(x >= Game.WIDTH-16) {
+			speedX = r.nextInt(5);
+			speedX *= -1;
+		}
+		
+		if(x <= 0) {
+			speedX = r.nextInt(5);
+		}
+		
 		x += speedX;
 		y += speedY;
-		
-		if(y <= 0 || y >= Game.HEIGHT-48) speedY *= -1;
-		if(x <= 0 || x >= Game.WIDTH-16) speedX *= -1;
 	}
 
 	public void render(Graphics g) {	
