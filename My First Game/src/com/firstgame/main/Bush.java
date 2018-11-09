@@ -2,6 +2,7 @@ package com.firstgame.main;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 
 public class Bush extends GameObject {
 
@@ -16,6 +17,10 @@ public class Bush extends GameObject {
 	public void render(Graphics g) {
 		g.setColor(Color.green);
 		g.fillRect(x, y, 65, 50);
+	}
+	
+	public Rectangle getBounds() {
+		return new Rectangle(x,y,0,0);
 	}
 
 }

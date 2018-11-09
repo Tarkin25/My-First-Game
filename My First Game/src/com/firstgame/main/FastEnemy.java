@@ -2,6 +2,7 @@ package com.firstgame.main;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.util.Random;
 
 public class FastEnemy extends GameObject {
@@ -17,7 +18,7 @@ public class FastEnemy extends GameObject {
 		
 		speedY = r.nextInt(8);
 		
-		int damage = 5;
+		damage = 1;
 	}
 
 	public void tick() {
@@ -46,6 +47,10 @@ public class FastEnemy extends GameObject {
 	public void render(Graphics g) {	
 		g.setColor(Color.red);
 		g.fillRect(x, y, 16, 16);
+	}
+	
+	public Rectangle getBounds() {
+		return new Rectangle(x,y,16,16);
 	}
 
 }

@@ -24,6 +24,7 @@ public class Game extends Canvas implements Runnable {
 	Random r;
 	
 	private Handler handler;
+	private HUD hud;
 
 	public Game() {
 		
@@ -33,12 +34,25 @@ public class Game extends Canvas implements Runnable {
 		
 		new Window(WIDTH, HEIGHT, "My First Game!", this);
 		
+		hud = new HUD();
+		
 		r = new Random();
 		
-		handler.addObject(new Player(WIDTH/2-32,HEIGHT/2-32, ID.Player));
+		handler.addObject(new Player(WIDTH/2-32,HEIGHT/2-32, ID.Player, handler));
+		handler.addObject(new Player2(WIDTH/2-50, HEIGHT/2-10, ID.Player2, handler));
 		handler.addObject(new SlowEnemy(r.nextInt(WIDTH), r.nextInt(HEIGHT), ID.SlowEnemy));
 		handler.addObject(new NormalEnemy(r.nextInt(WIDTH),r.nextInt(HEIGHT), ID.NormalEnemy));
 		handler.addObject(new FastEnemy(r.nextInt(WIDTH), r.nextInt(HEIGHT), ID.FastEnemy));
+		handler.addObject(new FastEnemy(r.nextInt(WIDTH), r.nextInt(HEIGHT), ID.FastEnemy));
+		handler.addObject(new FastEnemy(r.nextInt(WIDTH), r.nextInt(HEIGHT), ID.FastEnemy));
+		handler.addObject(new FastEnemy(r.nextInt(WIDTH), r.nextInt(HEIGHT), ID.FastEnemy));
+		handler.addObject(new FastEnemy(r.nextInt(WIDTH), r.nextInt(HEIGHT), ID.FastEnemy));
+		handler.addObject(new NormalEnemy(r.nextInt(WIDTH), r.nextInt(HEIGHT), ID.NormalEnemy));
+		handler.addObject(new NormalEnemy(r.nextInt(WIDTH), r.nextInt(HEIGHT), ID.NormalEnemy));
+		handler.addObject(new NormalEnemy(r.nextInt(WIDTH), r.nextInt(HEIGHT), ID.NormalEnemy));
+		handler.addObject(new NormalEnemy(r.nextInt(WIDTH), r.nextInt(HEIGHT), ID.NormalEnemy));
+		handler.addObject(new NormalEnemy(r.nextInt(WIDTH), r.nextInt(HEIGHT), ID.NormalEnemy));
+		handler.addObject(new NormalEnemy(r.nextInt(WIDTH), r.nextInt(HEIGHT), ID.NormalEnemy));
 		
 	}
 
@@ -62,9 +76,11 @@ public class Game extends Canvas implements Runnable {
 	}
 	
 	public void run() { 
-		//This is a game loop I copied from the Internet, it is used by many programs. 
-		//The game loop updates the game window as fast as it's able to and displays the current refreshing rate (FPS) in the console.
 		
+		this.requestFocus();
+		
+		//This is a game loop I copied from the Internet, it is used by many programs. 
+		//The game loop updates the game window as fast as it's able to and displays the current refreshing rate (FPS) in the console.		
 		long lastTime = System.nanoTime();
 		double amountOfTicks = 60.0;
 		double ns = 1000000000 / amountOfTicks;
@@ -90,7 +106,7 @@ public class Game extends Canvas implements Runnable {
 			
 			if(System.currentTimeMillis() - timer > 1000) {
 				timer += 1000;
-				System.out.println("FPS: " + frames);
+				//System.out.println("FPS: " + frames);
 				frames = 0;
 			}
 			
@@ -100,8 +116,9 @@ public class Game extends Canvas implements Runnable {
 		
 	}
 	
-	private void tick() {
-		handler.tick();
+	private void tick() {		
+		if(hud.tick()) handler.tick();
+		else stop();
 	}
 	
 	private void render() {
@@ -118,6 +135,7 @@ public class Game extends Canvas implements Runnable {
 		g.fillRect(0, 0, WIDTH, HEIGHT);
 		
 		handler.render(g);
+		hud.render(g);
 		
 		g.dispose();
 		bs.show();

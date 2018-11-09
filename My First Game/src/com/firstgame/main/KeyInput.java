@@ -17,7 +17,7 @@ public class KeyInput extends KeyAdapter {
 		for(int i=0; i<handler.object.size(); i++) {
 			GameObject tempObject = handler.object.get(i);
 			
-			if(tempObject.getId() == ID.Player) {
+			if(tempObject.getId() == ID.Player2) {
 				// key events for all objects with ID = Player
 				
 				if(key == KeyEvent.VK_UP) {
@@ -36,9 +36,31 @@ public class KeyInput extends KeyAdapter {
 					tempObject.setSpeedX(5);
 				}
 			}
+			
+			if(tempObject.getId() == ID.Player) {
+				// key events for all objects with ID = Player
+				
+				if(key == KeyEvent.VK_W) {
+					tempObject.setSpeedY(-5);
+				}
+				
+				if(key == KeyEvent.VK_S) {
+					tempObject.setSpeedY(5);
+				}
+				
+				if(key == KeyEvent.VK_A) {
+					tempObject.setSpeedX(-5);
+				}
+				
+				if(key == KeyEvent.VK_D) {
+					tempObject.setSpeedX(5);
+				}
+			}
+			
 		}
 		
 		if(key == KeyEvent.VK_ESCAPE) System.exit(0);
+		
 	}
 	
 	public void keyReleased(KeyEvent e) {
@@ -47,7 +69,7 @@ public class KeyInput extends KeyAdapter {
 		for(int i=0; i<handler.object.size(); i++) {
 			GameObject tempObject = handler.object.get(i);
 			
-			if(tempObject.getId() == ID.Player) {
+			if(tempObject.getId() == ID.Player2) {
 				if(key == KeyEvent.VK_UP) {
 					tempObject.setSpeedY(0);
 				}
@@ -61,6 +83,24 @@ public class KeyInput extends KeyAdapter {
 				}
 				
 				if(key == KeyEvent.VK_RIGHT) {
+					tempObject.setSpeedX(0);
+				}
+			}
+			
+			if(tempObject.getId() == ID.Player) {
+				if(key == KeyEvent.VK_W) {
+					tempObject.setSpeedY(0);
+				}
+				
+				if(key == KeyEvent.VK_S) {
+					tempObject.setSpeedY(0);
+				}
+				
+				if(key == KeyEvent.VK_A) {
+					tempObject.setSpeedX(0);
+				}
+				
+				if(key == KeyEvent.VK_D) {
 					tempObject.setSpeedX(0);
 				}
 			}

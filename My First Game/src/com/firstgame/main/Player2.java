@@ -4,11 +4,11 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 
-public class Player extends GameObject {
+public class Player2 extends GameObject {
 	
 	Handler handler;
 	
-	public Player(int x, int y, ID id, Handler handler) {
+	public Player2(int x, int y, ID id, Handler handler) {
 		super(x,y,id);
 		this.handler = handler;
 		
@@ -32,14 +32,14 @@ public class Player extends GameObject {
 			if(tempObject.getId() == ID.SlowEnemy || tempObject.getId() == ID.NormalEnemy || tempObject.getId() == ID.FastEnemy) {
 				if(getBounds().intersects(tempObject.getBounds())) {
 					//collision code
-					HUD.HEALTH -= tempObject.getDamage();
+					HUD.HEALTH2 -= tempObject.getDamage();
 				}
 			}
 		}
 	}
 
 	public void render(Graphics g) {
-		g.setColor(Color.white);
+		g.setColor(Color.blue);
 		g.fillRect(x, y, 32, 32);
 	}
 	
