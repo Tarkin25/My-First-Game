@@ -34,8 +34,6 @@ public class Game extends Canvas implements Runnable {
 		
 		new Window(WIDTH, HEIGHT, "My First Game!", this);
 		
-		hud = new HUD();
-		
 		r = new Random();
 		
 		//handler.addObject(new Player(WIDTH/2-32,HEIGHT/2-32, ID.Player, handler));
@@ -56,9 +54,10 @@ public class Game extends Canvas implements Runnable {
 		}
 		
 		smartPlayer = new SmartPlayer(WIDTH/2-32, HEIGHT/2-32, ID.SmartPlayer, handler);
-		spawner = new Spawn(handler, hud, smartPlayer);
-		
 		handler.addObject(smartPlayer);
+		
+		hud = new HUD();
+		spawner = new Spawn(handler, hud, smartPlayer);
 		
 	}
 
