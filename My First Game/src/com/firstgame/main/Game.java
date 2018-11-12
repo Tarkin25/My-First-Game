@@ -6,13 +6,9 @@ import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
 import java.util.Random;
 
+
 public class Game extends Canvas implements Runnable {
-	
-	// 123 Test, 123 Test
-	
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = -6494256809522819072L;
 	
 	
