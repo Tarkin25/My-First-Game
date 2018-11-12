@@ -41,17 +41,21 @@ public class Spawn {
 				handler.addObject(new FastEnemy(r.nextFloat()*Game.WIDTH, r.nextFloat()*Game.HEIGHT, ID.FastEnemy));
 			}
 			
-			smartPlayer.getNearest();
+			for(int i=0;i<handler.object.size();i++) {
+				if(handler.object.get(i).getId() == ID.SmartPlayer) {
+					handler.object.get(i).getNearest();
+				}
+			}
 		}
 		
-		if(HUD.HEALTH2<200) {
+		if(HUD.HEALTH2<100) {
 			if(smart2>0) {
 				handler.addObject(new SmartEnemy(r.nextFloat()*Game.WIDTH, r.nextFloat()*Game.HEIGHT, ID.SmartEnemy, handler));
 				smart2 = 0;
 			}
 		}
 		
-		if(HUD.HEALTH<200) {
+		if(HUD.HEALTH<100) {
 			if(smart>0) {
 				handler.addObject(new SmartEnemy2(r.nextFloat()*Game.WIDTH, r.nextFloat()*Game.HEIGHT, ID.SmartEnemy, handler));
 				smart = 0;

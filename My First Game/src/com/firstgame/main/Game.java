@@ -36,9 +36,11 @@ public class Game extends Canvas implements Runnable {
 		
 		r = new Random();
 		
-		//handler.addObject(new Player(WIDTH/2-32,HEIGHT/2-32, ID.Player, handler));
-		//handler.addObject(new Player2(WIDTH/2-50, HEIGHT/2-10, ID.Player2, handler));
+		twoVtwo();
 		
+	}
+	
+	public void smartEnemy() {
 		for(int i=0;i<2;i++) {
 			int chance = r.nextInt(100);
 			
@@ -58,7 +60,28 @@ public class Game extends Canvas implements Runnable {
 		
 		hud = new HUD();
 		spawner = new Spawn(handler, hud, smartPlayer);
+	}
+	
+	public void twoVtwo() {
+		handler.addObject(new Player(WIDTH/2-32,HEIGHT/2-32, ID.Player, handler));
+		handler.addObject(new Player2(WIDTH/2-50, HEIGHT/2-10, ID.Player2, handler));
 		
+		for(int i=0;i<10;i++) {
+			int chance = r.nextInt(100);
+			
+			if(chance<20) {
+				handler.addObject(new SlowEnemy(r.nextFloat()*Game.WIDTH, r.nextFloat()*Game.HEIGHT, ID.SlowEnemy));
+			}
+			else if(chance<70) {
+				handler.addObject(new NormalEnemy(r.nextFloat()*Game.WIDTH, r.nextFloat()*Game.HEIGHT, ID.NormalEnemy));
+			}
+			else {
+				handler.addObject(new FastEnemy(r.nextFloat()*Game.WIDTH, r.nextFloat()*Game.HEIGHT, ID.FastEnemy));
+			}
+		}
+		
+		hud = new HUD();
+		spawner = new Spawn(handler, hud, null);
 	}
 
 	public synchronized void start() {
@@ -112,7 +135,6 @@ public class Game extends Canvas implements Runnable {
 			if(System.currentTimeMillis() - timer > 1000) {
 				timer += 1000;
 				System.out.println("FPS: " + frames);
-				//System.out.println("Difficulty: " + handler.difficulty);
 				frames = 0;
 			}
 			

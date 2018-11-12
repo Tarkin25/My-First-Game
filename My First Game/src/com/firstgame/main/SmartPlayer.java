@@ -68,7 +68,7 @@ public class SmartPlayer extends GameObject {
 	public void getNearest() {
 		//enlist every object that is an enemy
 		for(int i=0;i<handler.object.size();i++) {
-			if(handler.object.get(i).getId() != ID.Player && handler.object.get(i).getId() != ID.Player2 && handler.object.get(i).getId() != ID.SmartPlayer) {				
+			if(handler.object.get(i).getId() != ID.Player && handler.object.get(i).getId() != ID.Player2 && handler.object.get(i).getId() != ID.SmartPlayer) {			
 				enemy.add(handler.object.get(i));
 			}
 		}

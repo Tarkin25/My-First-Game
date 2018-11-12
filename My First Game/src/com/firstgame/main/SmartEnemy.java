@@ -30,12 +30,14 @@ public class SmartEnemy extends GameObject {
 	}
 
 	public void tick() {		
-		float diffX = x - player.getX() - 8;
-		float diffY = y - player.getY();
-		float distance = (float)(Math.sqrt((x-player.getX())*(x-player.getX()) + (y-player.getY())*(y-player.getY())));
-		
-		speedX = (float)((-1.0/distance) * diffX);
-		speedY = (float)((-1.0/distance) * diffY);
+		if(player!=null) {
+			float diffX = x - player.getX() - 8;
+			float diffY = y - player.getY();
+			float distance = (float)(Math.sqrt((x-player.getX())*(x-player.getX()) + (y-player.getY())*(y-player.getY())));
+			
+			speedX = (float)((-1.0/distance) * diffX);
+			speedY = (float)((-1.0/distance) * diffY);
+		}
 		
 		x += speedX;
 		y += speedY;
