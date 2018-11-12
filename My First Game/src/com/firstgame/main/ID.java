@@ -7,6 +7,8 @@ public enum ID {
 	Prop(),
 	SlowEnemy(),
 	NormalEnemy(),
-	FastEnemy();
+	FastEnemy(),
+	SmartEnemy(),
+	SmartPlayer();
 
 }

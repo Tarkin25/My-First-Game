@@ -9,35 +9,35 @@ public class SlowEnemy extends GameObject {
 	
 	Random r;
 	
-	public SlowEnemy(int x, int y, ID id) {
+	public SlowEnemy(float x, float y, ID id) {
 		super(x, y, id);
 		
 		r = new Random();
 		
-		speedX = r.nextInt(5);
+		speedX = r.nextFloat()*3;
 		
-		speedY = r.nextInt(5);
+		speedY = r.nextFloat()*3;
 		
 		damage = 3;
 	}
 
 	public void tick() {
 		if(y <= 0) {
-			speedY = r.nextInt(5);
+			speedY = r.nextFloat()*3;
 		}
 		
 		if(y >= Game.HEIGHT-48) {
-			speedY = r.nextInt(5);
+			speedY = r.nextFloat()*3;
 			speedY *= -1; 
 		}
 		
 		if(x >= Game.WIDTH-16) {
-			speedX = r.nextInt(5);
+			speedX = r.nextFloat()*3;
 			speedX *= -1;
 		}
 		
 		if(x <= 0) {
-			speedX = r.nextInt(5);
+			speedX = r.nextFloat()*3;
 		}
 		
 		x += speedX;
@@ -46,11 +46,15 @@ public class SlowEnemy extends GameObject {
 
 	public void render(Graphics g) {	
 		g.setColor(Color.red);
-		g.fillRect(x, y, 16, 16);
+		g.fillRect((int)(x), (int)(y), 16, 16);
 	}
 	
 	public Rectangle getBounds() {
-		return new Rectangle(x,y,16,16);
+		return new Rectangle((int)(x),(int)(y),16,16);
+	}
+	
+	public void getNearest() {
+
 	}
 
 }

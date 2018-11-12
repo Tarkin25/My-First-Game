@@ -25,6 +25,10 @@ public class Game extends Canvas implements Runnable {
 	
 	private Handler handler;
 	private HUD hud;
+	
+	private Spawn spawner;
+	
+	public SmartPlayer smartPlayer;
 
 	public Game() {
 		
@@ -38,23 +42,27 @@ public class Game extends Canvas implements Runnable {
 		
 		r = new Random();
 		
-		handler.addObject(new Player(WIDTH/2-32,HEIGHT/2-32, ID.Player, handler));
-		handler.addObject(new Player2(WIDTH/2-50, HEIGHT/2-10, ID.Player2, handler));
-		handler.addObject(new SlowEnemy(r.nextInt(WIDTH), r.nextInt(HEIGHT), ID.SlowEnemy));
-		handler.addObject(new SlowEnemy(r.nextInt(WIDTH), r.nextInt(HEIGHT), ID.SlowEnemy));
-		handler.addObject(new SlowEnemy(r.nextInt(WIDTH), r.nextInt(HEIGHT), ID.SlowEnemy));
-		handler.addObject(new NormalEnemy(r.nextInt(WIDTH),r.nextInt(HEIGHT), ID.NormalEnemy));
-		handler.addObject(new FastEnemy(r.nextInt(WIDTH), r.nextInt(HEIGHT), ID.FastEnemy));
-		handler.addObject(new FastEnemy(r.nextInt(WIDTH), r.nextInt(HEIGHT), ID.FastEnemy));
-		handler.addObject(new FastEnemy(r.nextInt(WIDTH), r.nextInt(HEIGHT), ID.FastEnemy));
-		handler.addObject(new FastEnemy(r.nextInt(WIDTH), r.nextInt(HEIGHT), ID.FastEnemy));
-		handler.addObject(new FastEnemy(r.nextInt(WIDTH), r.nextInt(HEIGHT), ID.FastEnemy));
-		handler.addObject(new NormalEnemy(r.nextInt(WIDTH), r.nextInt(HEIGHT), ID.NormalEnemy));
-		handler.addObject(new NormalEnemy(r.nextInt(WIDTH), r.nextInt(HEIGHT), ID.NormalEnemy));
-		handler.addObject(new NormalEnemy(r.nextInt(WIDTH), r.nextInt(HEIGHT), ID.NormalEnemy));
-		handler.addObject(new NormalEnemy(r.nextInt(WIDTH), r.nextInt(HEIGHT), ID.NormalEnemy));
-		handler.addObject(new NormalEnemy(r.nextInt(WIDTH), r.nextInt(HEIGHT), ID.NormalEnemy));
-		handler.addObject(new NormalEnemy(r.nextInt(WIDTH), r.nextInt(HEIGHT), ID.NormalEnemy));
+		//handler.addObject(new Player(WIDTH/2-32,HEIGHT/2-32, ID.Player, handler));
+		//handler.addObject(new Player2(WIDTH/2-50, HEIGHT/2-10, ID.Player2, handler));
+		
+		for(int i=0;i<2;i++) {
+			int chance = r.nextInt(100);
+			
+			if(chance<20) {
+				handler.addObject(new SlowEnemy(r.nextFloat()*Game.WIDTH, r.nextFloat()*Game.HEIGHT, ID.SlowEnemy));
+			}
+			else if(chance<70) {
+				handler.addObject(new NormalEnemy(r.nextFloat()*Game.WIDTH, r.nextFloat()*Game.HEIGHT, ID.NormalEnemy));
+			}
+			else {
+				handler.addObject(new FastEnemy(r.nextFloat()*Game.WIDTH, r.nextFloat()*Game.HEIGHT, ID.FastEnemy));
+			}
+		}
+		
+		smartPlayer = new SmartPlayer(WIDTH/2-32, HEIGHT/2-32, ID.SmartPlayer, handler);
+		spawner = new Spawn(handler, hud, smartPlayer);
+		
+		handler.addObject(smartPlayer);
 		
 	}
 
@@ -108,7 +116,8 @@ public class Game extends Canvas implements Runnable {
 			
 			if(System.currentTimeMillis() - timer > 1000) {
 				timer += 1000;
-				//System.out.println("FPS: " + frames);
+				System.out.println("FPS: " + frames);
+				//System.out.println("Difficulty: " + handler.difficulty);
 				frames = 0;
 			}
 			
@@ -119,8 +128,13 @@ public class Game extends Canvas implements Runnable {
 	}
 	
 	private void tick() {		
-		if(hud.tick()) handler.tick();
-		else stop();
+		if(hud.tick()) {
+			handler.tick();
+			spawner.tick();
+		}
+		else {
+			stop();
+		}
 	}
 	
 	private void render() {
@@ -143,7 +157,7 @@ public class Game extends Canvas implements Runnable {
 		bs.show();
 	}
 	
-	public static int clamp(int var, int min, int max) {
+	public static float clamp(float var, float min, float max) {
 		if(var <= min) {
 			return var = min;
 		}
