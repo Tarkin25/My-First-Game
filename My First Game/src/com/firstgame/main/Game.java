@@ -27,7 +27,6 @@ public class Game extends Canvas implements Runnable {
 	public SmartPlayer smartPlayer;
 
 	public Game() {
-		
 		handler = new Handler();
 		
 		this.addKeyListener(new KeyInput(handler));
@@ -36,11 +35,10 @@ public class Game extends Canvas implements Runnable {
 		
 		r = new Random();
 		
-		twoVtwo();
-		
+		smartPlayer();
 	}
 	
-	public void smartEnemy() {
+	public void smartPlayer() {
 		for(int i=0;i<2;i++) {
 			int chance = r.nextInt(100);
 			
@@ -62,7 +60,7 @@ public class Game extends Canvas implements Runnable {
 		spawner = new Spawn(handler, hud, smartPlayer);
 	}
 	
-	public void twoVtwo() {
+	public void twoPlayers() {
 		handler.addObject(new Player(WIDTH/2-32,HEIGHT/2-32, ID.Player, handler));
 		handler.addObject(new Player2(WIDTH/2-50, HEIGHT/2-10, ID.Player2, handler));
 		
