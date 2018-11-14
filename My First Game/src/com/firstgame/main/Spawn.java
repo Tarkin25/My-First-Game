@@ -46,7 +46,7 @@ public class Spawn {
 					handler.object.get(i).getNearest();
 				}
 			}
-		}
+		}	
 		
 		if(HUD.HEALTH2<100) {
 			if(smart2>0) {

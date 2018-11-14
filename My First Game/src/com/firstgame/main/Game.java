@@ -25,6 +25,8 @@ public class Game extends Canvas implements Runnable {
 	private Spawn spawner;
 	
 	public SmartPlayer smartPlayer;
+	
+	private String mode;
 
 	public Game() {
 		handler = new Handler();
@@ -35,11 +37,13 @@ public class Game extends Canvas implements Runnable {
 		
 		r = new Random();
 		
-		smartPlayer();
+		twoPlayers();
 	}
 	
 	public void smartPlayer() {
-		for(int i=0;i<2;i++) {
+		mode = "Smart player";
+		
+		for(int i=0;i<5;i++) {
 			int chance = r.nextInt(100);
 			
 			if(chance<20) {
@@ -61,6 +65,8 @@ public class Game extends Canvas implements Runnable {
 	}
 	
 	public void twoPlayers() {
+		mode = "Two players";
+		
 		handler.addObject(new Player(WIDTH/2-32,HEIGHT/2-32, ID.Player, handler));
 		handler.addObject(new Player2(WIDTH/2-50, HEIGHT/2-10, ID.Player2, handler));
 		
@@ -166,7 +172,7 @@ public class Game extends Canvas implements Runnable {
 		g.fillRect(0, 0, WIDTH, HEIGHT);
 		
 		handler.render(g);
-		hud.render(g);
+		hud.render(g, mode);
 		
 		g.dispose();
 		bs.show();

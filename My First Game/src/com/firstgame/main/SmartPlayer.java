@@ -63,6 +63,20 @@ public class SmartPlayer extends GameObject {
 		
 		x += Game.clamp(speedX, -5, 5);
 		y += Game.clamp(speedY, -5, 5);
+		
+		collision();
+	}
+	
+	private void collision() {
+		for(int i=0;i<handler.object.size();i++) {
+			GameObject tempObject = handler.object.get(i);
+			
+			if(tempObject.getId() == ID.SlowEnemy || tempObject.getId() == ID.NormalEnemy || tempObject.getId() == ID.FastEnemy || tempObject.getId() == ID.SmartEnemy) {
+				if(getBounds().intersects(tempObject.getBounds())) {
+					HUD.HEALTH3 -= tempObject.getDamage();
+				}
+			}
+		}
 	}
 	
 	public void getNearest() {
