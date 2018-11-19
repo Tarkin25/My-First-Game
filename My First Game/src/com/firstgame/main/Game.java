@@ -37,7 +37,7 @@ public class Game extends Canvas implements Runnable {
 		
 		r = new Random();
 		
-		twoPlayers();
+		smartPlayer();
 	}
 	
 	public void smartPlayer() {
