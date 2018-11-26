@@ -30,7 +30,7 @@ public class Spawn {
 	public void tick() {
 		tempScore++;
 		
-		if(tempScore>=1000 && level < 10) {
+		if(tempScore>=1000 && level < 7) {
 			tempScore = 0;
 			level++;
 			hud.setLevel(hud.getLevel() + 1);
@@ -55,7 +55,7 @@ public class Spawn {
 			
 		}
 		
-		if(level == 10 && tempScore <= 2000) {
+		if(level == 7 && tempScore <= 2000) {
 			
 			for(int i=0;i<handler.object.size();i++) {
 				if(handler.object.get(i).getId() != ID.Player && handler.object.get(i).getId() != ID.Player2 && handler.object.get(i).getId() != ID.BossEnemy && handler.object.get(i).getId() != ID.BossBullet) {
@@ -75,7 +75,7 @@ public class Spawn {
 			
 		}
 		
-		if(tempScore>=2000 && level == 10) {
+		if(tempScore>=2000 && level == 7) {
 			tempScore = 0;
 			for(int i=0;i<handler.object.size();i++) {
 				if(handler.object.get(i).getId() == ID.BossEnemy) {

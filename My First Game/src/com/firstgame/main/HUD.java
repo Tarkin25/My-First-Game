@@ -44,8 +44,8 @@ public class HUD {
 			else if(HEALTH2==0) {
 				System.out.println("Weiss hat gewonnen!");
 			}
-			//TODO true wieder auf false setzen!!!!!
-			return true;
+
+			return false;
 		}
 	}
 	

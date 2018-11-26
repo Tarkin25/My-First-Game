@@ -15,21 +15,25 @@ public class Game extends Canvas implements Runnable {
 	public static final int WIDTH = 800, HEIGHT = WIDTH / 12 * 9;
 	
 	private Thread thread;
-	private boolean running = false;
-	
-	Random r;
-	
+	private boolean running = false;	
+	private Random r;	
 	public Handler handler;
-	private HUD hud;
-	
-	private Spawn spawner;
-	
-	public SmartPlayer smartPlayer;
-	
+	private HUD hud;	
+	private Spawn spawner;	
+	public SmartPlayer smartPlayer;	
 	private String mode;
+	
+	public enum STATE {
+		Menu,
+		Game
+	};
+	
+	public STATE gameState = STATE.Menu;
 
 	public Game() {
 		handler = new Handler();
+		
+		hud = new HUD();
 		
 		this.addKeyListener(new KeyInput(handler));
 		
@@ -37,7 +41,9 @@ public class Game extends Canvas implements Runnable {
 		
 		r = new Random();
 		
-		smartPlayer();
+		if(gameState == STATE.Game) {
+			smartPlayer();
+		}
 	}
 	
 	public void bossEnemy() {
@@ -47,8 +53,7 @@ public class Game extends Canvas implements Runnable {
 		handler.addObject(new Player2(WIDTH/2-50, HEIGHT/2-10, ID.Player2, handler));
 		
 		handler.addObject(new BossEnemy(Game.WIDTH/2, 0, ID.BossEnemy, handler));
-		
-		hud = new HUD();
+
 		spawner = new Spawn(handler, hud, null);
 	}
 	
@@ -72,7 +77,6 @@ public class Game extends Canvas implements Runnable {
 		smartPlayer = new SmartPlayer(WIDTH/2-32, HEIGHT/2-32, ID.SmartPlayer, handler);
 		handler.addObject(smartPlayer);
 		
-		hud = new HUD();
 		spawner = new Spawn(handler, hud, smartPlayer);
 	}
 	
@@ -96,7 +100,6 @@ public class Game extends Canvas implements Runnable {
 			}
 		}
 		
-		hud = new HUD();
 		spawner = new Spawn(handler, hud, null);
 	}
 
@@ -161,12 +164,11 @@ public class Game extends Canvas implements Runnable {
 	}
 	
 	private void tick() {		
-		if(hud.tick()) {
-			handler.tick();
-			spawner.tick();
-		}
-		else {
-			stop();
+		if(gameState == STATE.Game) {
+			if(hud.tick()) {
+				handler.tick();
+				spawner.tick();
+			}
 		}
 	}
 	
@@ -184,7 +186,14 @@ public class Game extends Canvas implements Runnable {
 		g.fillRect(0, 0, WIDTH, HEIGHT);
 		
 		handler.render(g);
-		hud.render(g, mode);
+		
+		if(gameState == STATE.Game) {
+			hud.render(g, mode);
+		}
+		else {
+			g.setColor(Color.white);
+			g.drawString("Menu", 100, 100);
+		}
 		
 		g.dispose();
 		bs.show();
