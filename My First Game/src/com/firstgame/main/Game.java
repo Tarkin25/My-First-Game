@@ -37,7 +37,19 @@ public class Game extends Canvas implements Runnable {
 		
 		r = new Random();
 		
-		smartPlayer();
+		twoPlayers();
+	}
+	
+	public void bossEnemy() {
+		mode = "Two players";
+		
+		handler.addObject(new Player(WIDTH/2-32,HEIGHT/2-32, ID.Player, handler));
+		handler.addObject(new Player2(WIDTH/2-50, HEIGHT/2-10, ID.Player2, handler));
+		
+		handler.addObject(new BossEnemy(Game.WIDTH/2, 0, ID.BossEnemy, handler));
+		
+		hud = new HUD();
+		spawner = new Spawn(handler, hud, null);
 	}
 	
 	public void smartPlayer() {

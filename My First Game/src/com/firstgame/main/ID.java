@@ -9,6 +9,8 @@ public enum ID {
 	NormalEnemy(),
 	FastEnemy(),
 	SmartEnemy(),
-	SmartPlayer();
+	SmartPlayer(),
+	BossEnemy(),
+	BossBullet();
 
 }
