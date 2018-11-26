@@ -22,39 +22,28 @@ public class Game extends Canvas implements Runnable {
 	private Spawn spawner;	
 	public SmartPlayer smartPlayer;	
 	private String mode;
+	private Menu menu;
+	public boolean died = false;
 	
 	public enum STATE {
 		Menu,
-		Game
+		PvP,
+		Smart
 	};
 	
 	public STATE gameState = STATE.Menu;
 
 	public Game() {
 		handler = new Handler();
-		
 		hud = new HUD();
+		menu = new Menu(this, handler);
 		
 		this.addKeyListener(new KeyInput(handler));
+		this.addMouseListener(menu);
 		
 		new Window(WIDTH, HEIGHT, "My First Game!", this);
 		
 		r = new Random();
-		
-		if(gameState == STATE.Game) {
-			smartPlayer();
-		}
-	}
-	
-	public void bossEnemy() {
-		mode = "Two players";
-		
-		handler.addObject(new Player(WIDTH/2-32,HEIGHT/2-32, ID.Player, handler));
-		handler.addObject(new Player2(WIDTH/2-50, HEIGHT/2-10, ID.Player2, handler));
-		
-		handler.addObject(new BossEnemy(Game.WIDTH/2, 0, ID.BossEnemy, handler));
-
-		spawner = new Spawn(handler, hud, null);
 	}
 	
 	public void smartPlayer() {
@@ -164,12 +153,21 @@ public class Game extends Canvas implements Runnable {
 	}
 	
 	private void tick() {		
-		if(gameState == STATE.Game) {
+		if(gameState == STATE.PvP || gameState == STATE.Smart) {
 			if(hud.tick()) {
 				handler.tick();
 				spawner.tick();
 			}
+			else {
+				died = true;
+				gameState = STATE.Menu;
+			}
 		}
+		
+		if(gameState == STATE.Menu) {
+			menu.tick();
+		}
+		
 	}
 	
 	private void render() {
@@ -187,12 +185,15 @@ public class Game extends Canvas implements Runnable {
 		
 		handler.render(g);
 		
-		if(gameState == STATE.Game) {
+		if(gameState == STATE.PvP || gameState == STATE.Smart) {
 			hud.render(g, mode);
 		}
-		else {
-			g.setColor(Color.white);
-			g.drawString("Menu", 100, 100);
+		else if(gameState == STATE.Menu) {
+			if(died == true) {
+				g.dispose();
+				bs.show();
+			}
+			menu.render(g);
 		}
 		
 		g.dispose();
