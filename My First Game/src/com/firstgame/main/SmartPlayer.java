@@ -26,7 +26,7 @@ public class SmartPlayer extends GameObject {
 	public void tick() {	
 		ticks++;
 		
-		if(ticks>10) {
+		if(ticks>5) {
 			getNearest();
 			ticks = 0;
 		}

@@ -19,7 +19,7 @@ public class Game extends Canvas implements Runnable {
 	
 	Random r;
 	
-	private Handler handler;
+	public Handler handler;
 	private HUD hud;
 	
 	private Spawn spawner;
@@ -37,7 +37,7 @@ public class Game extends Canvas implements Runnable {
 		
 		r = new Random();
 		
-		twoPlayers();
+		smartPlayer();
 	}
 	
 	public void bossEnemy() {
