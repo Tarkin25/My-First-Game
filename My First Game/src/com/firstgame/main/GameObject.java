@@ -1,17 +1,19 @@
 package com.firstgame.main;
 
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.util.Random;
 
 public abstract class GameObject {
 	
-	protected int x, y;	
-	protected ID id;	
-	protected int speedX, speedY;
+	protected float x, y;
+	protected ID id;
+	protected float speedX, speedY;
+	protected int damage;
 	
 	Random r;
 	
-	public GameObject(int x, int y, ID id) {
+	public GameObject(float x, float y, ID id) {
 		this.x = x;
 		this.y = y;
 		this.id = id;
@@ -19,20 +21,22 @@ public abstract class GameObject {
 	
 	public abstract void tick();
 	public abstract void render(Graphics g);
+	public abstract Rectangle getBounds();
+	public abstract void getNearest();
 	
-	public void setX(int x) {
+	public void setX(float x) {
 		this.x = x;
 	}
 	
-	public void setY(int y) {
+	public void setY(float y) {
 		this.y = y;
 	}
 	
-	public int getX() {
+	public float getX() {
 		return x;
 	}
 	
-	public int getY() {
+	public float getY() {
 		return y;
 	}
 	
@@ -44,20 +48,24 @@ public abstract class GameObject {
 		return id;
 	}
 	
-	public void setSpeedX(int speedX) {
+	public void setSpeedX(float speedX) {
 		this.speedX = speedX;
 	}
 	
-	public int getSpeedX() {
+	public float getSpeedX() {
 		return speedX;
 	}
 	
-	public void setSpeedY(int speedY) {
+	public void setSpeedY(float speedY) {
 		this.speedY = speedY;
 	}
 	
-	public int getSpeedY() {
+	public float getSpeedY() {
 		return speedY;
+	}
+	
+	public int getDamage() {
+		return damage;
 	}
 
 }
