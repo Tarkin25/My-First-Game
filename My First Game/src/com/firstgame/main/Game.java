@@ -12,15 +12,15 @@ public class Game extends Canvas implements Runnable {
 	private static final long serialVersionUID = -6494256809522819072L;
 	
 	
-	public static final int WIDTH = 800, HEIGHT = WIDTH / 12 * 9;
+	public static final int WIDTH = 1920, HEIGHT = 1080;
 	
 	private Thread thread;
-	private boolean running = false;	
+	private boolean running = false;
 	private Random r;	
 	public Handler handler;
 	private HUD hud;	
 	private Spawn spawner;	
-	public SmartPlayer smartPlayer;	
+	public SmartPlayer smartPlayer;
 	private String mode;
 	private Menu menu;
 	public boolean died = false;
