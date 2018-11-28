@@ -12,9 +12,9 @@ public class Game extends Canvas implements Runnable {
 	private static final long serialVersionUID = -6494256809522819072L;
 	
 	
-	public static final int WIDTH = 1920, HEIGHT = 1080;
+	public static final int WIDTH = 800, HEIGHT = WIDTH/12 * 9;
 	
-	private Thread thread;
+	public Thread thread;
 	private boolean running = false;
 	private Random r;	
 	public Handler handler;
@@ -34,9 +34,9 @@ public class Game extends Canvas implements Runnable {
 	public STATE gameState = STATE.Menu;
 
 	public Game() {
-		handler = new Handler();
-		hud = new HUD();
-		menu = new Menu(this, handler);
+		handler = new Handler(this);
+		hud = new HUD(this);
+		menu = new Menu(this);
 		
 		this.addKeyListener(new KeyInput(handler));
 		this.addMouseListener(menu);
@@ -47,49 +47,53 @@ public class Game extends Canvas implements Runnable {
 	}
 	
 	public void smartPlayer() {
-		mode = "Smart player";
-		
-		for(int i=0;i<5;i++) {
-			int chance = r.nextInt(100);
+		if(gameState == STATE.Smart) {
+			mode = "Smart player";
 			
-			if(chance<20) {
-				handler.addObject(new SlowEnemy(r.nextFloat()*Game.WIDTH, r.nextFloat()*Game.HEIGHT, ID.SlowEnemy));
+			for(int i=0;i<5;i++) {
+				int chance = r.nextInt(100);
+				
+				if(chance<20) {
+					handler.addObject(new SlowEnemy(r.nextFloat()*Game.WIDTH, r.nextFloat()*Game.HEIGHT, ID.SlowEnemy));
+				}
+				else if(chance<70) {
+					handler.addObject(new NormalEnemy(r.nextFloat()*Game.WIDTH, r.nextFloat()*Game.HEIGHT, ID.NormalEnemy));
+				}
+				else {
+					handler.addObject(new FastEnemy(r.nextFloat()*Game.WIDTH, r.nextFloat()*Game.HEIGHT, ID.FastEnemy));
+				}
 			}
-			else if(chance<70) {
-				handler.addObject(new NormalEnemy(r.nextFloat()*Game.WIDTH, r.nextFloat()*Game.HEIGHT, ID.NormalEnemy));
-			}
-			else {
-				handler.addObject(new FastEnemy(r.nextFloat()*Game.WIDTH, r.nextFloat()*Game.HEIGHT, ID.FastEnemy));
-			}
+			
+			smartPlayer = new SmartPlayer(WIDTH/2-32, HEIGHT/2-32, ID.SmartPlayer, handler);
+			handler.addObject(smartPlayer);
+			
+			spawner = new Spawn(handler, hud, smartPlayer);
 		}
-		
-		smartPlayer = new SmartPlayer(WIDTH/2-32, HEIGHT/2-32, ID.SmartPlayer, handler);
-		handler.addObject(smartPlayer);
-		
-		spawner = new Spawn(handler, hud, smartPlayer);
 	}
 	
 	public void twoPlayers() {
-		mode = "Two players";
-		
-		handler.addObject(new Player(WIDTH/2-32,HEIGHT/2-32, ID.Player, handler));
-		handler.addObject(new Player2(WIDTH/2-50, HEIGHT/2-10, ID.Player2, handler));
-		
-		for(int i=0;i<10;i++) {
-			int chance = r.nextInt(100);
+		if(gameState == STATE.PvP) {
+			mode = "Two players";
 			
-			if(chance<20) {
-				handler.addObject(new SlowEnemy(r.nextFloat()*Game.WIDTH, r.nextFloat()*Game.HEIGHT, ID.SlowEnemy));
+			handler.addObject(new Player(WIDTH/2-32,HEIGHT/2-32, ID.Player, handler));
+			handler.addObject(new Player2(WIDTH/2-50, HEIGHT/2-10, ID.Player2, handler));
+			
+			for(int i=0;i<10;i++) {
+				int chance = r.nextInt(100);
+				
+				if(chance<20) {
+					handler.addObject(new SlowEnemy(r.nextFloat()*Game.WIDTH, r.nextFloat()*Game.HEIGHT, ID.SlowEnemy));
+				}
+				else if(chance<70) {
+					handler.addObject(new NormalEnemy(r.nextFloat()*Game.WIDTH, r.nextFloat()*Game.HEIGHT, ID.NormalEnemy));
+				}
+				else {
+					handler.addObject(new FastEnemy(r.nextFloat()*Game.WIDTH, r.nextFloat()*Game.HEIGHT, ID.FastEnemy));
+				}
 			}
-			else if(chance<70) {
-				handler.addObject(new NormalEnemy(r.nextFloat()*Game.WIDTH, r.nextFloat()*Game.HEIGHT, ID.NormalEnemy));
-			}
-			else {
-				handler.addObject(new FastEnemy(r.nextFloat()*Game.WIDTH, r.nextFloat()*Game.HEIGHT, ID.FastEnemy));
-			}
+			
+			spawner = new Spawn(handler, hud, null);
 		}
-		
-		spawner = new Spawn(handler, hud, null);
 	}
 
 	public synchronized void start() {
@@ -152,14 +156,16 @@ public class Game extends Canvas implements Runnable {
 		
 	}
 	
-	private void tick() {		
+	private void tick() {
+		
 		if(gameState == STATE.PvP || gameState == STATE.Smart) {
 			if(hud.tick()) {
 				handler.tick();
-				spawner.tick();
+				if(spawner != null) {
+					spawner.tick();
+				}
 			}
 			else {
-				died = true;
 				gameState = STATE.Menu;
 			}
 		}
@@ -189,10 +195,6 @@ public class Game extends Canvas implements Runnable {
 			hud.render(g, mode);
 		}
 		else if(gameState == STATE.Menu) {
-			if(died == true) {
-				g.dispose();
-				bs.show();
-			}
 			menu.render(g);
 		}
 		

@@ -13,9 +13,9 @@ public class Menu extends MouseAdapter {
 	private Game game;
 	private Handler handler;
 	
-	public Menu(Game game, Handler handler) {
+	public Menu(Game game) {
 		this.game = game;
-		this.handler = handler;
+		this.handler = game.handler;
 	}
 	
 	public void mousePressed(MouseEvent e) {

@@ -15,6 +15,12 @@ public class HUD {
 	
 	private int level = 1;
 	
+	Game game;
+	
+	public HUD(Game game) {
+		this.game = game;
+	}
+	
 	public void setLevel(int level) {
 		this.level = level;
 	}
@@ -44,6 +50,8 @@ public class HUD {
 			else if(HEALTH2==0) {
 				System.out.println("Weiss hat gewonnen!");
 			}
+			
+			game.died = true;
 
 			return false;
 		}
