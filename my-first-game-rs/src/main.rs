@@ -31,6 +31,9 @@ fn main() {
         .add_system(keep_in_bounds)
         .add_system(player_enemy_collision)
         .add_system(highlight_collisions)
+        .add_system(update_health_sprite)
+        .add_system(apply_damage)
+        .add_system(sync_health_bar)
         .run();
 }
 
@@ -38,7 +41,9 @@ fn spawn_camera(mut commands: Commands) {
     commands.spawn(Camera2dBundle::default());
 }
 
-fn spawn_player(mut commands: Commands) {
+fn spawn_player(mut commands: Commands, game_bounds: Res<GameBounds>) {
+    let health_bar = insert_health_bar(&mut commands, game_bounds);
+
     commands.spawn((
         SpriteBundle {
             sprite: Sprite {
@@ -60,7 +65,85 @@ fn spawn_player(mut commands: Commands) {
         },
         MovementSpeed(150.0),
         CollisionList::default(),
+        Health::new(1.0, health_bar),
     ));
+}
+
+fn insert_health_bar(commands: &mut Commands, game_bounds: Res<GameBounds>) -> Entity {
+    let health_bar = HealthBar::new(1.0, 1.0, Vec2::new(200.0, 16.0));
+
+    let parent = commands
+        .spawn(SpriteBundle {
+            sprite: Sprite {
+                custom_size: Some(health_bar.dimensions),
+                color: Color::GRAY,
+                ..Default::default()
+            },
+            transform: Transform::from_xyz(
+                0.0,
+                game_bounds.height_half() as f32 - health_bar.dimensions.y / 2.0 - 16.0,
+                3.0,
+            ),
+            ..Default::default()
+        })
+        .id();
+
+    let health_bar = commands
+        .spawn((
+            SpriteBundle {
+                sprite: Sprite {
+                    custom_size: Some(health_bar.dimensions),
+                    color: Color::rgb(150.0 / 255.0, 1.0, 0.0),
+                    ..Default::default()
+                },
+                transform: Transform::from_xyz(0.0, 0.0, 2.0),
+                ..Default::default()
+            },
+            health_bar,
+        ))
+        .id();
+
+    commands.entity(parent).add_child(health_bar);
+
+    health_bar
+}
+
+fn sync_health_bar(health_query: Query<&Health>, mut health_bar_query: Query<&mut HealthBar>) {
+    for health in &health_query {
+        if let Ok(mut health_bar) = health_bar_query.get_mut(health.health_bar) {
+            health_bar.set_health(health.value);
+        }
+    }
+}
+
+fn apply_damage(
+    mut health_query: Query<(&mut Health, &CollisionList)>,
+    damage_query: Query<&Damage>,
+    time: Res<Time>,
+) {
+    for (mut health, collisions) in &mut health_query {
+        for entity in collisions.iter() {
+            if let Ok(damage) = damage_query.get(*entity) {
+                health.decrease(damage.0 * time.delta_seconds());
+            }
+        }
+    }
+}
+
+fn update_health_sprite(mut query: Query<(&mut Sprite, &mut Transform, &HealthBar)>) {
+    for (mut sprite, mut transform, health_bar) in &mut query {
+        let health_ratio = health_bar.health / health_bar.max_health;
+
+        sprite.color.set_g(health_ratio);
+
+        sprite.custom_size = Some(Vec2::new(
+            health_bar.dimensions.x * health_ratio,
+            health_bar.dimensions.y,
+        ));
+
+        transform.translation.x =
+            ((health_bar.dimensions.x * health_ratio) - health_bar.dimensions.x) / 2.0;
+    }
 }
 
 fn move_through_velocity(mut query: Query<(&mut Transform, &Velocity)>, time: Res<Time>) {
@@ -143,110 +226,6 @@ fn handle_controls(
     });
 }
 
-#[derive(Component, Debug, Default, Deref, DerefMut)]
-pub struct CollisionList(HashSet<Entity>);
-
-#[derive(Component, Default, Debug)]
-pub struct Velocity(Vec2);
-
-#[derive(Resource)]
-pub struct GameBounds {
-    pub width: i32,
-    pub height: i32,
-}
-
-impl GameBounds {
-    pub fn width_half(&self) -> i32 {
-        self.width / 2
-    }
-
-    pub fn height_half(&self) -> i32 {
-        self.height / 2
-    }
-}
-
-#[derive(Component)]
-struct Player;
-
-#[derive(Component)]
-pub struct Controls {
-    pub up: KeyCode,
-    pub down: KeyCode,
-    pub left: KeyCode,
-    pub right: KeyCode,
-}
-
-#[derive(Component)]
-pub struct MovementSpeed(pub f32);
-
-#[derive(Component, Debug)]
-pub struct Health(pub f32);
-
-#[derive(Clone, Copy, Debug)]
-pub struct Rectangle {
-    pub top_left: Vec3,
-    pub bottom_right: Vec3,
-}
-
-impl Rectangle {
-    pub fn intersects(self, other: Self) -> bool {
-        if self.top_left.x > other.bottom_right.x || other.top_left.x > self.bottom_right.x {
-            return false;
-        }
-
-        if self.bottom_right.y > other.top_left.y || other.bottom_right.y > self.top_left.y {
-            return false;
-        }
-
-        true
-    }
-}
-
-#[derive(Clone, Copy, Component)]
-pub struct Bounds(pub Vec2);
-
-impl Bounds {
-    pub fn width_half(self) -> f32 {
-        self.0.x / 2.0
-    }
-
-    pub fn height_half(self) -> f32 {
-        self.0.y / 2.0
-    }
-}
-
-impl From<Bounds> for Vec3 {
-    fn from(value: Bounds) -> Self {
-        Vec3::new(value.0.x, value.0.y, 0.0)
-    }
-}
-
-fn keep_in_bounds(mut query: Query<(&mut Transform, &Bounds)>, game_bounds: Res<GameBounds>) {
-    let width_half = game_bounds.width_half() as f32;
-    let height_half = game_bounds.height_half() as f32;
-
-    query.for_each_mut(|(mut transform, bounds)| {
-        let bounds_half = bounds.0 / 2.0;
-        transform.translation.x = transform
-            .translation
-            .x
-            .clamp(-width_half + bounds_half.x, width_half - bounds_half.x);
-        transform.translation.y = transform
-            .translation
-            .y
-            .clamp(-height_half + bounds_half.y, height_half - bounds_half.y);
-    });
-}
-
-#[derive(Component)]
-pub struct Enemy;
-
-#[derive(Component)]
-pub struct MaxSpeed(pub f32);
-
-#[derive(Component)]
-pub struct MinSpeed(pub f32);
-
 fn spawn_enemies(mut commands: Commands, game_bounds: Res<GameBounds>) {
     for _ in 0..4 {
         spawn_enemy(&mut commands, &game_bounds, 16, 90.0);
@@ -290,7 +269,8 @@ fn spawn_enemy(commands: &mut Commands, game_bounds: &Res<GameBounds>, size: i32
         .insert(Velocity(velocity))
         .insert(Enemy)
         .insert(MinSpeed(min_speed))
-        .insert(MaxSpeed(max_speed));
+        .insert(MaxSpeed(max_speed))
+        .insert(Damage(0.1));
 }
 
 fn bounce_enemies(
@@ -314,6 +294,155 @@ fn bounce_enemies(
         }
     });
 }
+
+fn keep_in_bounds(mut query: Query<(&mut Transform, &Bounds)>, game_bounds: Res<GameBounds>) {
+    let width_half = game_bounds.width_half() as f32;
+    let height_half = game_bounds.height_half() as f32;
+
+    query.for_each_mut(|(mut transform, bounds)| {
+        let bounds_half = bounds.0 / 2.0;
+        transform.translation.x = transform
+            .translation
+            .x
+            .clamp(-width_half + bounds_half.x, width_half - bounds_half.x);
+        transform.translation.y = transform
+            .translation
+            .y
+            .clamp(-height_half + bounds_half.y, height_half - bounds_half.y);
+    });
+}
+
+#[derive(Component, Debug)]
+pub struct HealthBar {
+    health: f32,
+    max_health: f32,
+    dimensions: Vec2,
+}
+
+impl HealthBar {
+    pub fn new(health: f32, max_health: f32, dimensions: Vec2) -> Self {
+        Self {
+            health,
+            max_health,
+            dimensions,
+        }
+    }
+
+    pub fn set_health(&mut self, health: f32) {
+        self.health = health.max(0.0);
+    }
+
+    pub fn decrease_health(&mut self, decrement: f32) {
+        self.set_health(self.health - decrement);
+    }
+}
+
+#[derive(Component, Debug)]
+pub struct Damage(pub f32);
+
+#[derive(Component, Debug, Default, Deref, DerefMut)]
+pub struct CollisionList(HashSet<Entity>);
+
+#[derive(Component, Default, Debug)]
+pub struct Velocity(Vec2);
+
+#[derive(Resource)]
+pub struct GameBounds {
+    pub width: i32,
+    pub height: i32,
+}
+
+impl GameBounds {
+    pub fn width_half(&self) -> i32 {
+        self.width / 2
+    }
+
+    pub fn height_half(&self) -> i32 {
+        self.height / 2
+    }
+}
+
+#[derive(Component)]
+struct Player;
+
+#[derive(Component)]
+pub struct Controls {
+    pub up: KeyCode,
+    pub down: KeyCode,
+    pub left: KeyCode,
+    pub right: KeyCode,
+}
+
+#[derive(Component)]
+pub struct MovementSpeed(pub f32);
+
+#[derive(Component, Debug)]
+pub struct Health {
+    value: f32,
+    health_bar: Entity,
+}
+
+impl Health {
+    pub fn new(value: f32, health_bar: Entity) -> Self {
+        Self { value, health_bar }
+    }
+
+    pub fn set(&mut self, value: f32) {
+        self.value = value.max(0.0);
+    }
+
+    pub fn decrease(&mut self, decrement: f32) {
+        self.set(self.value - decrement);
+    }
+}
+
+#[derive(Clone, Copy, Debug)]
+pub struct Rectangle {
+    pub top_left: Vec3,
+    pub bottom_right: Vec3,
+}
+
+impl Rectangle {
+    pub fn intersects(self, other: Self) -> bool {
+        if self.top_left.x > other.bottom_right.x || other.top_left.x > self.bottom_right.x {
+            return false;
+        }
+
+        if self.bottom_right.y > other.top_left.y || other.bottom_right.y > self.top_left.y {
+            return false;
+        }
+
+        true
+    }
+}
+
+#[derive(Clone, Copy, Component)]
+pub struct Bounds(pub Vec2);
+
+impl Bounds {
+    pub fn width_half(self) -> f32 {
+        self.0.x / 2.0
+    }
+
+    pub fn height_half(self) -> f32 {
+        self.0.y / 2.0
+    }
+}
+
+impl From<Bounds> for Vec3 {
+    fn from(value: Bounds) -> Self {
+        Vec3::new(value.0.x, value.0.y, 0.0)
+    }
+}
+
+#[derive(Component)]
+pub struct Enemy;
+
+#[derive(Component)]
+pub struct MaxSpeed(pub f32);
+
+#[derive(Component)]
+pub struct MinSpeed(pub f32);
 
 #[cfg(test)]
 mod tests {
